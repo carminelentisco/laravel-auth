@@ -26,7 +26,7 @@
             <div class="form-group">
                 <label for="body">Testo</label>
                 <textarea class="form-control" name="body" id="body" cols="30" rows="10">
-                    {{ old('body', $post->title) }}
+                    {{ old('body', $post->body) }}
                 </textarea>
             </div>
 

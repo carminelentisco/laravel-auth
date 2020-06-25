@@ -23,7 +23,7 @@
                         <td>{{ $post->created_at }}</td>
                         <td>{{ $post->updated_at }}</td>
                         <td>
-                            <a href="{{ route('admin.posts.edit') }}" class="btn btn-primary">Modifica</a>
+                            <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-primary">Modifica</a>
                         </td>
                         <td>
                             <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST">

@@ -44,7 +44,7 @@
                 @endforeach
             </tbody>
         </table>
-        
+
         <div class="wrap-pagination mt-5 d-flex justify-content-center">
             {{ $posts->links() }}
         </div>
