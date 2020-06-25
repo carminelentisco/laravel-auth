@@ -26,7 +26,11 @@
                             <a href="" class="btn btn-primary">Modifica</a>
                         </td>
                         <td>
-                            <a href="" class="btn btn-success">Elimina</a>
+                            <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <input class="btn btn-danger" type="submit" value="Elimina">
+                            </form>
                         </td>
                     </tr>
             </tbody>
