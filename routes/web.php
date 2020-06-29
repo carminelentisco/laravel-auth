@@ -14,25 +14,20 @@ use Illuminate\Support\Facades\Auth;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () { 
-    return view('guest.welcome'); 
-})->name('home');
+// HomePage  { Rotta visibile a tutti }
+Route::get('/', 'HomePageController@index' )->name('home');
 
 Auth::routes();
 
-//Guest
+// GUEST { Rotta per utenti non registrati }
 Route::get('/posts', 'PostController@index')->name('posts.index');
 
-// ADMIN
-Route::prefix('admin')
-    ->name('admin.')
-    ->namespace('Admin')
-    ->middleware('auth')
-    ->group(function () {
+// ADMIN { Rotta per utenti registrati }
+Route::prefix('admin')->name('admin.')->namespace('Admin')->middleware('auth')->group(function () {
 
-        Route::get('/home', 'HomeController@index')->name('home');
-        Route::resource('/posts','PostController');
+    Route::get('/home', 'HomeController@index')->name('home');
+    Route::resource('/posts','PostController');
         
-    });
+});
+
 
