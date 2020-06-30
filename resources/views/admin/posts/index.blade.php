@@ -1,50 +1,46 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
+    <div class="container d-flex flex-column align-items-center">
         <h1 class="mb-4">Archivio del blog</h1>
 
         @if (session('post-delete'))
-            <div class="alert alert-danger">
-                <p>{{ session('post-delete') }} è stato eliminato.</p>
+            <div class="card text-white bg-success mb-3" style="width: 100%;">
+                <div class="card-header">Elimanto !</div>
+                <div class="card-body">
+                  <h5 class="card-title">{{ session('post-delete') }} è stato eliminato.</h5>
+                </div>
             </div>
-        @endif
+        @endif      
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Titolo</th>
-                    <th>Creato il</th>
-                    <th>Aggiornato il</th>
-                    <th colspan="4"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach( $posts as $post)
-                    <tr>
-                        <td>{{ $post->id }}</td>
-                        <td>{{ $post->title }}</td>
-                        <td>{{ $post->created_at }}</td>
-                        <td>{{ $post->updated_at }}</td>
-                        <td>
-                            <a href="{{ route('admin.posts.show', $post->id) }}" class="btn btn-primary">Mostra</a>
-                        </td>
-                        <td>
-                            <a href="{{ route('admin.posts.edit', $post->id )}}" class="btn btn-primary">Modifica</a>
-                        </td>
-                        <td>
+        <div class="d-flex flex-wrap justify-content-around">
+            @foreach( $posts as $post)
+                <div class="card mb-5" style="width: 18rem;">
+                    {{-- Check dell immagine --}}
+                    @if (!empty($post->path_img)) 
+                        <img height="200px" width="200px" class="card-img-top" src="{{ asset('/storage/' . $post->path_img) }}" alt="{{ $post->title }}">
+                    @else
+                        <div class="alert alert-info">
+                            <h2>Non Vi sono immagini disponibili</h2>
+                        </div>
+                    @endif
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>{{ $post->title }}</strong></h5>
+                        <p class="card-text">{{ $post->body }}</p>
+                        <div class="d-flex justify-content-around">
+                            <a href="{{ route('admin.posts.show', $post->id) }}" class="btn btn-dark">Mostra</a>
+                            <a href="{{ route('admin.posts.edit', $post->id) }}" class="btn btn-dark">Modifica</a>
                             <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <input class="btn btn-danger" type="submit" value="Elimina">
                             </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        
         <div class="wrap-pagination mt-5 d-flex justify-content-center">
             {{ $posts->links() }}
         </div>
