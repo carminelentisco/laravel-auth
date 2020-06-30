@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Post;
 use App\Http\Controllers\Controller;
+use App\Mail\NewPost;
+use App\Mail\UpdatePost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 
 class PostController extends Controller
 {
@@ -17,7 +21,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::where('user_id', Auth::id())->orderBy('created_at', 'DESC')->paginate(5);
+        $posts = Post::where('user_id', Auth::id())->orderBy('created_at', 'DESC')->paginate(6);
         return view('admin.posts.index', compact('posts'));
     }
 
@@ -46,11 +50,20 @@ class PostController extends Controller
         $data['user_id'] = Auth::id();
         $data['slug'] = Str::slug($data['title'], '-');
 
+        // Setto l'immagine
+        if(!empty($data['path_img'])) {
+            $data['path_img'] = Storage::disk('public')->put('images', $data['path_img']);
+        }
+
         $newPost = new Post();
         $newPost->fill($data);
         $saved = $newPost->save();
 
         if ($saved) {
+
+            // Invio della mail
+            Mail::to('user@test.it')->send( new NewPost($newPost) );
+
             return redirect()->route('admin.posts.show', $newPost->id);
         }
     }
@@ -88,10 +101,26 @@ class PostController extends Controller
     {
         $request->validate($this->validateRule());
         $data = $request->all();
+        
+        // Assegna lo slug
         $data['slug'] = Str::slug($data['title'], '-');
+
+        // Check
+        if(!empty($data['path_img'])) {
+
+            // Elimina l'immagine Precedente
+            if(!empty($post->path_img)) {
+                Storage::disk('public')->delete($post->path_img);
+            }
+
+            // Nuova immagine
+            $data['path_img'] = Storage::disk('public')->put('images', $data['path_img']);
+        }
+
         $updated = $post->update($data);
 
         if ( $updated ) {
+            Mail::to('user@gmail.com')->send( new UpdatePost( $post ) );
             return redirect()->route('admin.posts.show', $post->id);
         }
 
@@ -114,6 +143,12 @@ class PostController extends Controller
         $deleted = $post->delete();
 
         if ($deleted) {
+
+            // Rimozione immagine
+            if(!empty($post->path_img)) {
+                Storage::disk('public')->delete($post->path_img);   
+            }
+
             return redirect()->route('admin.posts.index')->with('post-delete', $title);
         }
     }
@@ -121,7 +156,8 @@ class PostController extends Controller
     private function validateRule() {
         return [
             'title' => 'required',
-            'body' => 'required' 
+            'body' => 'required' ,
+            'path_img' => 'image',
         ];
     }
 }
