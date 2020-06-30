@@ -10,6 +10,7 @@ class Post extends Model
         'title',
         'user_id', 
         'body',
-        'slug'
+        'slug',
+        'path_img'
     ];
 }
