@@ -14,7 +14,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.posts.store') }}" method="POST">
+        <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('POST')
 
@@ -28,6 +28,12 @@
                 <textarea class="form-control" name="body" id="body" cols="30" rows="10">
                     {{ old('body') }}
                 </textarea>
+            </div>
+
+            {{-- Image --}}
+            <div class="form-group">
+                <label for="path_img">Immagine</label>
+                <input class="form-control" type="file" name="path_img" id="path_img" accept="image/*">
             </div>
 
             <input class="btn btn-success" type="submit" value="Crea">
